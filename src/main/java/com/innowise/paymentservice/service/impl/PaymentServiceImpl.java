@@ -1,5 +1,6 @@
 package com.innowise.paymentservice.service.impl;
 
+import com.innowise.paymentservice.client.RandomNumFeignClient;
 import com.innowise.paymentservice.dto.*;
 import com.innowise.paymentservice.entity.Payment;
 import com.innowise.paymentservice.enumtype.PaymentStatus;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,10 +24,21 @@ import java.util.UUID;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+    private final RandomNumFeignClient randomNumFeignClient;
 
     @Override
     public PaymenResponseDto createPayment(PaymentCreateDto paymentCreateDto) {
         Payment payment = paymentMapper.toPayment(paymentCreateDto);
+        RandomNumResponseDto num = randomNumFeignClient.getNum();
+
+        if(num.random() % 2 == 0) {
+            payment.setStatus(PaymentStatus.SUCCESS);
+        } else {
+            payment.setStatus(PaymentStatus.FAILED);
+        }
+
+        payment.setTimestamp(LocalDateTime.now());
+
         Payment savedPayment = paymentRepository.save(payment);
         return paymentMapper.toDto(savedPayment);
     }
