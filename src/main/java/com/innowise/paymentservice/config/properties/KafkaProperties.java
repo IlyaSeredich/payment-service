@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class KafkaProperties {
-    @Value("${app.kafka.topics.email-sending}")
+    @Value("${app.kafka.topics}")
     private String topicName;
 }

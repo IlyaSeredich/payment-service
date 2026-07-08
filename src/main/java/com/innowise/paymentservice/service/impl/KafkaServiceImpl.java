@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class KafkaServiceImpl implements KafkaService {
-    @Value("${app.kafka.topics.email-sending}")
+    @Value("${app.kafka.topics}")
     private String topicName;
     private final KafkaTemplate<String, PaymentResponseDto> kafkaTemplate;
 

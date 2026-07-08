@@ -110,13 +110,13 @@ public class PaymentServiceImpl implements PaymentService {
                 ));
     }
 
-    private PagePaymentResponseDto createPagePaymentResponseDto(Page<Payment> searchedUsers) {
+    private PagePaymentResponseDto createPagePaymentResponseDto(Page<Payment> searchedPayments) {
         return new PagePaymentResponseDto(
-                searchedUsers.getContent().stream().map(paymentMapper::toDto).toList(),
-                searchedUsers.getPageable().getPageNumber(),
-                searchedUsers.getPageable().getPageSize(),
-                searchedUsers.getTotalElements(),
-                searchedUsers.getTotalPages()
+                searchedPayments.getContent().stream().map(paymentMapper::toDto).toList(),
+                searchedPayments.getPageable().getPageNumber(),
+                searchedPayments.getPageable().getPageSize(),
+                searchedPayments.getTotalElements(),
+                searchedPayments.getTotalPages()
         );
     }
 
