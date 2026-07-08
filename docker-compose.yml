@@ -9,15 +9,14 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     ports:
       - "27017:27017"
+    networks:
+      - payment-service-network
     volumes:
       - mongodb_data:/data/db
 
   kafka-1:
     image: bitnami/kafka:3.4
     container_name: kafka-1
-    ports:
-      - "9092:9092"
-      - "9093:9093"
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -30,15 +29,17 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9092
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    networks:
+      - payment-service-network
     volumes:
       - kafka_1_data:/bitnami/kafka
 
   kafka-2:
     image: bitnami/kafka:3.4
     container_name: kafka-2
-    ports:
-      - "9094:9092"
-      - "9095:9093"
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -51,15 +52,17 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9092
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    ports:
+      - "9094:9092"
+      - "9095:9093"
+    networks:
+      - payment-service-network
     volumes:
       - kafka_2_data:/bitnami/kafka
 
   kafka-3:
     image: bitnami/kafka:3.4
     container_name: kafka-3
-    ports:
-      - "9096:9092"
-      - "9097:9093"
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -72,21 +75,50 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9092
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    ports:
+      - "9096:9092"
+      - "9097:9093"
+    networks:
+      - payment-service-network
     volumes:
       - kafka_3_data:/bitnami/kafka
 
   kafka-ui:
     image: provectuslabs/kafka-ui:v0.7.0
     container_name: kafka-ui
-    ports:
-      - "8089:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=local-kraft
       - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka-1:9092,kafka-2:9092,kafka-3:9092
+    ports:
+      - "8089:8080"
     depends_on:
-      - kafka-1
-      - kafka-2
-      - kafka-3
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+    networks:
+      - payment-service-network
+
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    container_name: payment-service
+    restart: unless-stopped
+    ports:
+      - '8085:8085'
+    networks:
+      - payment-service-network
+    depends_on:
+      kafka-ui:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
 
 
 volumes:
@@ -94,3 +126,6 @@ volumes:
   kafka_1_data:
   kafka_2_data:
   kafka_3_data:
+
+networks:
+  payment-service-network:

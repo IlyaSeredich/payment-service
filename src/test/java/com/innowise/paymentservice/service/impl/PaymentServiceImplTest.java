@@ -54,7 +54,12 @@ class PaymentServiceImplTest {
     void shouldCreateSuccessfulPaymentWhenRandomIsEven() {
         PaymentCreateDto createDto = new PaymentCreateDto(orderId, userId, new BigDecimal(100));
         Payment payment = new Payment();
-        PaymentResponseDto responseDto = new PaymentResponseDto("1234", orderId, userId, PaymentStatus.SUCCESS, new BigDecimal(100));
+        PaymentResponseDto responseDto = new PaymentResponseDto(
+                "1234",
+                orderId,
+                userId,
+                PaymentStatus.SUCCESS,
+                new BigDecimal(100));
 
         when(paymentMapper.toPayment(createDto)).thenReturn(payment);
         when(randomNumFeignClient.getNum()).thenReturn(new RandomNumResponseDto(42L));
@@ -71,7 +76,11 @@ class PaymentServiceImplTest {
 
     @Test
     void shouldCreateFailedPaymentWhenRandomIsOdd() {
-        PaymentCreateDto createDto = new PaymentCreateDto(orderId, userId, new BigDecimal(100));
+        PaymentCreateDto createDto = new PaymentCreateDto(
+                orderId,
+                userId,
+                new BigDecimal(100));
+
         Payment payment = new Payment();
         PaymentResponseDto responseDto = new PaymentResponseDto(
                 "1234",
@@ -93,11 +102,19 @@ class PaymentServiceImplTest {
 
     @Test
     void shouldGetPaymentsByUserId() {
-        PageRequestDto pageDto = new PageRequestDto(0, 10, "timestamp", "desc");
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
+        PageRequestDto pageDto = new PageRequestDto(
+                0,
+                10,
+                "timestamp",
+                "desc");
+        Pageable pageable = PageRequest.of(
+                0,
+                10,
+                Sort.by(Sort.Direction.DESC, "timestamp"));
 
         Page<Payment> page = new PageImpl<>(List.of(new Payment()), pageable, 1);
-        PaymentResponseDto responseDto = new PaymentResponseDto("1234", orderId, userId, PaymentStatus.SUCCESS, new BigDecimal(100));
+        PaymentResponseDto responseDto = new PaymentResponseDto(
+                "1234", orderId, userId, PaymentStatus.SUCCESS, new BigDecimal(100));
 
         when(paymentRepository.findAllByUserId(userId, pageable)).thenReturn(page);
         when(paymentMapper.toDto(any(Payment.class))).thenReturn(responseDto);
@@ -110,8 +127,10 @@ class PaymentServiceImplTest {
 
     @Test
     void shouldGetPaymentsByOrderIdt() {
-        PageRequestDto pageDto = new PageRequestDto(0, 10, "timestamp", "desc");
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
+        PageRequestDto pageDto = new PageRequestDto(
+                0, 10, "timestamp", "desc");
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
 
         PaymentResponseDto responseDto = new PaymentResponseDto(
                 "1234",
@@ -133,8 +152,10 @@ class PaymentServiceImplTest {
 
     @Test
     void shouldGetPaymentsByStatus() {
-        PageRequestDto pageDto = new PageRequestDto(0, 10, "timestamp", "desc");
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
+        PageRequestDto pageDto = new PageRequestDto(
+                0, 10, "timestamp", "desc");
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
 
         PaymentResponseDto responseDto = new PaymentResponseDto(
                 "1234",
@@ -166,7 +187,8 @@ class PaymentServiceImplTest {
                 createPaymentWithAmount(new BigDecimal("200.00"))
         );
 
-        when(paymentRepository.findAllByUserIdAndTimestampBetween(userId, dateDto.from(), dateDto.to()))
+        when(paymentRepository.findAllByUserIdAndTimestampBetween(
+                userId, dateDto.from(), dateDto.to()))
                 .thenReturn(payments);
 
         when(paymentMapper.toSumResponseDto(any(BigDecimal.class)))
