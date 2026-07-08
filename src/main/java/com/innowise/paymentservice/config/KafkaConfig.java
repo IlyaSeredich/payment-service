@@ -13,7 +13,6 @@ public class KafkaConfig {
 
     @Bean
     public NewTopic emailSendingTopic() {
-
         return new NewTopic(kafkaProperties.getTopicName(),
                 3,
                 (short) 3);
