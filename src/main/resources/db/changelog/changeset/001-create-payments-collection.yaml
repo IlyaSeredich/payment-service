@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-payments-collection
+      author: Ilya Seredich
+      changes:
+        - runCommand:
+            command: |
+              {
+                create: "payments"
+              }

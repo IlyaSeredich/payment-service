@@ -6,6 +6,7 @@ import com.innowise.paymentservice.entity.Payment;
 import com.innowise.paymentservice.enumtype.PaymentStatus;
 import com.innowise.paymentservice.mapper.PaymentMapper;
 import com.innowise.paymentservice.repository.PaymentRepository;
+import com.innowise.paymentservice.service.KafkaService;
 import com.innowise.paymentservice.service.PaymentService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,9 +26,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final RandomNumFeignClient randomNumFeignClient;
+    private final KafkaService kafkaService;
 
     @Override
-    public PaymenResponseDto createPayment(PaymentCreateDto paymentCreateDto) {
+    public PaymentResponseDto createPayment(PaymentCreateDto paymentCreateDto) {
         Payment payment = paymentMapper.toPayment(paymentCreateDto);
         RandomNumResponseDto num = randomNumFeignClient.getNum();
 
@@ -40,7 +42,11 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setTimestamp(LocalDateTime.now());
 
         Payment savedPayment = paymentRepository.save(payment);
-        return paymentMapper.toDto(savedPayment);
+
+        PaymentResponseDto paymentResponseDto = paymentMapper.toDto(savedPayment);
+
+        kafkaService.sendMessage(paymentResponseDto);
+        return paymentResponseDto;
     }
 
     @Override

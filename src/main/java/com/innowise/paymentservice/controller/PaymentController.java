@@ -21,9 +21,9 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<PaymenResponseDto> createPayment(@Valid @RequestBody PaymentCreateDto paymentCreateDto) {
-        PaymenResponseDto paymenResponseDto = paymentService.createPayment(paymentCreateDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(paymenResponseDto);
+    public ResponseEntity<PaymentResponseDto> createPayment(@Valid @RequestBody PaymentCreateDto paymentCreateDto) {
+        PaymentResponseDto paymentResponseDto = paymentService.createPayment(paymentCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentResponseDto);
     }
 
     @GetMapping("/my")

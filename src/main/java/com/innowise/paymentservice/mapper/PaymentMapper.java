@@ -1,7 +1,7 @@
 package com.innowise.paymentservice.mapper;
 
-import com.innowise.paymentservice.dto.PaymenResponseDto;
 import com.innowise.paymentservice.dto.PaymentCreateDto;
+import com.innowise.paymentservice.dto.PaymentResponseDto;
 import com.innowise.paymentservice.dto.SumResponseDto;
 import com.innowise.paymentservice.entity.Payment;
 import org.mapstruct.Mapper;
@@ -12,6 +12,6 @@ import java.math.BigDecimal;
 public interface PaymentMapper {
 
     Payment toPayment(PaymentCreateDto paymentCreateDto);
-    PaymenResponseDto toDto(Payment payment);
+    PaymentResponseDto toDto(Payment payment);
     SumResponseDto toSumResponseDto(BigDecimal totalSum);
 }
