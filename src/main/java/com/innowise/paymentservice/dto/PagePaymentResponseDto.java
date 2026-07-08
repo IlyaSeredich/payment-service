@@ -4,9 +4,9 @@ import java.util.List;
 
 public record PagePaymentResponseDto(
         List<PaymentResponseDto> content,
-        int pageNumber,
-        int pageSize,
-        long totalElements,
-        int totalPages
+        Integer pageNumber,
+        Integer pageSize,
+        Long totalElements,
+        Integer totalPages
 ){
 }

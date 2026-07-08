@@ -3,6 +3,7 @@ package com.innowise.paymentservice.dto;
 import com.innowise.paymentservice.enumtype.PaymentStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record PaymentResponseDto(
@@ -10,6 +11,7 @@ public record PaymentResponseDto(
         Long orderId,
         UUID userId,
         PaymentStatus status,
+        LocalDateTime timestamp,
         BigDecimal paymentAmount
 ) {
 }

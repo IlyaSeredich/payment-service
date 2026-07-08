@@ -59,10 +59,11 @@ class PaymentServiceImplTest {
                 orderId,
                 userId,
                 PaymentStatus.SUCCESS,
+                LocalDateTime.now(),
                 new BigDecimal(100));
 
         when(paymentMapper.toPayment(createDto)).thenReturn(payment);
-        when(randomNumFeignClient.getNum()).thenReturn(new RandomNumResponseDto(42L));
+        when(randomNumFeignClient.getNum()).thenReturn(List.of(new RandomNumResponseDto(42L)));
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
         when(paymentMapper.toDto(payment)).thenReturn(responseDto);
 
@@ -87,11 +88,12 @@ class PaymentServiceImplTest {
                 orderId,
                 userId,
                 PaymentStatus.SUCCESS,
+                LocalDateTime.now(),
                 new BigDecimal(100)
         );
 
         when(paymentMapper.toPayment(any())).thenReturn(payment);
-        when(randomNumFeignClient.getNum()).thenReturn(new RandomNumResponseDto(7L));
+        when(randomNumFeignClient.getNum()).thenReturn(List.of(new RandomNumResponseDto(7L)));
         when(paymentRepository.save(any())).thenReturn(payment);
         when(paymentMapper.toDto(any())).thenReturn(responseDto);
 
@@ -114,7 +116,12 @@ class PaymentServiceImplTest {
 
         Page<Payment> page = new PageImpl<>(List.of(new Payment()), pageable, 1);
         PaymentResponseDto responseDto = new PaymentResponseDto(
-                "1234", orderId, userId, PaymentStatus.SUCCESS, new BigDecimal(100));
+                "1234",
+                orderId,
+                userId,
+                PaymentStatus.SUCCESS,
+                LocalDateTime.now(),
+                new BigDecimal(100));
 
         when(paymentRepository.findAllByUserId(userId, pageable)).thenReturn(page);
         when(paymentMapper.toDto(any(Payment.class))).thenReturn(responseDto);
@@ -137,6 +144,7 @@ class PaymentServiceImplTest {
                 orderId,
                 userId,
                 PaymentStatus.SUCCESS,
+                LocalDateTime.now(),
                 new BigDecimal(100)
         );
 
@@ -162,6 +170,7 @@ class PaymentServiceImplTest {
                 orderId,
                 userId,
                 PaymentStatus.SUCCESS,
+                LocalDateTime.now(),
                 new BigDecimal(100)
         );
 

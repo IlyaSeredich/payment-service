@@ -31,8 +31,6 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests ->
                         requests
-                                .requestMatchers(HttpMethod.POST, "/api/payments")
-                                    .hasAnyRole("user", "admin")
                                 .requestMatchers(HttpMethod.GET, "/api/payments/my")
                                     .hasAnyRole("user", "admin")
                                 .requestMatchers(HttpMethod.GET, "/api/payments/users")
@@ -45,6 +43,8 @@ public class SecurityConfig {
                                 .hasAnyRole("user", "admin")
                                 .requestMatchers(HttpMethod.GET, "/api/payments/total")
                                 .hasRole("admin")
+                                .requestMatchers(HttpMethod.POST, "/api/payments")
+                                .hasRole( "admin")
 
                 )
                 .sessionManagement(session ->

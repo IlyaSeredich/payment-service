@@ -1,6 +1,5 @@
 package com.innowise.paymentservice.config;
 
-import com.innowise.paymentservice.config.properties.KafkaProperties;
 import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -9,14 +8,13 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @AllArgsConstructor
-@Profile("!test")
-public class KafkaConfig {
-    private final KafkaProperties kafkaProperties;
+@Profile("test")
+public class KafkaTestConfig {
 
     @Bean
     public NewTopic partitionTopic() {
-        return new NewTopic(kafkaProperties.getTopicName(),
+        return new NewTopic("TestTopic",
                 3,
-                (short) 3);
+                (short) 1);
     }
 }

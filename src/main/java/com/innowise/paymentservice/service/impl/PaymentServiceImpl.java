@@ -31,9 +31,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponseDto createPayment(PaymentCreateDto paymentCreateDto) {
         Payment payment = paymentMapper.toPayment(paymentCreateDto);
-        RandomNumResponseDto num = randomNumFeignClient.getNum();
+        List<RandomNumResponseDto> num = randomNumFeignClient.getNum();
 
-        if(num.random() % 2 == 0) {
+        if(num.stream().findFirst().get().random() % 2 == 0) {
             payment.setStatus(PaymentStatus.SUCCESS);
         } else {
             payment.setStatus(PaymentStatus.FAILED);
