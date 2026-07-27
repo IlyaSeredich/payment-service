@@ -1,5 +1,6 @@
 package com.innowise.paymentservice.service.impl;
 
+import com.innowise.paymentservice.dto.PaymentEvent;
 import com.innowise.paymentservice.dto.PaymentResponseDto;
 import com.innowise.paymentservice.service.KafkaService;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,10 @@ import org.springframework.stereotype.Service;
 public class KafkaServiceImpl implements KafkaService {
     @Value("${app.kafka.topic}")
     private String topicName;
-    private final KafkaTemplate<String, PaymentResponseDto> kafkaTemplate;
+    private final KafkaTemplate<String, Long> kafkaTemplate;
 
     @Override
-    public void sendMessage(PaymentResponseDto paymentResponseDto) {
-        kafkaTemplate.send(topicName, paymentResponseDto);
+    public void sendMessage(Long orderId) {
+        kafkaTemplate.send(topicName, orderId);
     }
 }

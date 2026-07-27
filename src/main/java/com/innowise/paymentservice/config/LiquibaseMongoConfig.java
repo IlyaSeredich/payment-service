@@ -50,7 +50,7 @@ public class LiquibaseMongoConfig {
                 }
 
             } catch (LiquibaseException e) {
-                throw new LiquibaseInitException(e.getMessage());
+
             }
         };
     }

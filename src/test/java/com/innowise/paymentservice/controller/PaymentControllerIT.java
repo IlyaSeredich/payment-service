@@ -194,10 +194,9 @@ class PaymentControllerIT {
     }
 
     @Test
-    void shouldCreateSuccessfulPaymentWhenItHasAdminRole() throws Exception {
+    void shouldCreateSuccessfulPayment() throws Exception {
         PaymentCreateDto request = new PaymentCreateDto(
                 1L,
-                UUID.randomUUID(),
                 BigDecimal.valueOf(100)
         );
 
@@ -205,7 +204,7 @@ class PaymentControllerIT {
                         post("/api/payments")
                                 .header(
                                         HttpHeaders.AUTHORIZATION,
-                                        "Bearer " + getAdminAccessToken()
+                                        "Bearer " + getUserAccessToken()
                                 )
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
@@ -222,7 +221,6 @@ class PaymentControllerIT {
     void shouldNotCreatePaymentWhenItHasNotAdminRole() throws Exception {
         PaymentCreateDto request = new PaymentCreateDto(
                 1L,
-                UUID.randomUUID(),
                 BigDecimal.valueOf(100)
         );
 
@@ -375,14 +373,14 @@ class PaymentControllerIT {
 
         Payment payment1 = new Payment();
         payment1.setOrderId(1L);
-        payment1.setUserId(uuid);
+        payment1.setUserId(uuid.toString());
         payment1.setTimestamp(time1);
         payment1.setStatus(PaymentStatus.SUCCESS);
         payment1.setPaymentAmount(BigDecimal.valueOf(100L));
 
         Payment payment2 = new Payment();
         payment2.setOrderId(2L);
-        payment2.setUserId(uuid);
+        payment2.setUserId(uuid.toString());
         payment2.setTimestamp(time2);
         payment2.setStatus(PaymentStatus.SUCCESS);
         payment2.setPaymentAmount(BigDecimal.valueOf(100L));
@@ -420,14 +418,14 @@ class PaymentControllerIT {
 
         Payment payment1 = new Payment();
         payment1.setOrderId(1L);
-        payment1.setUserId(uuid);
+        payment1.setUserId(uuid.toString());
         payment1.setTimestamp(time1);
         payment1.setStatus(PaymentStatus.SUCCESS);
         payment1.setPaymentAmount(BigDecimal.valueOf(100L));
 
         Payment payment2 = new Payment();
         payment2.setOrderId(2L);
-        payment2.setUserId(uuid);
+        payment2.setUserId(uuid.toString());
         payment2.setTimestamp(time2);
         payment2.setStatus(PaymentStatus.SUCCESS);
         payment2.setPaymentAmount(BigDecimal.valueOf(100L));
@@ -460,7 +458,6 @@ class PaymentControllerIT {
     private PaymentResponseDto createPayment() throws Exception {
         PaymentCreateDto request = new PaymentCreateDto(
                 1L,
-                UUID.fromString(extractSubject(getUserAccessToken())),
                 BigDecimal.valueOf(100)
         );
 

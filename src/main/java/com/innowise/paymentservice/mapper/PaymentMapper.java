@@ -5,13 +5,16 @@ import com.innowise.paymentservice.dto.PaymentResponseDto;
 import com.innowise.paymentservice.dto.SumResponseDto;
 import com.innowise.paymentservice.entity.Payment;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface PaymentMapper {
 
-    Payment toPayment(PaymentCreateDto paymentCreateDto);
+    @Mapping(target = "userId", source = "userId")
+    Payment toPayment(PaymentCreateDto paymentCreateDto, String userId);
     PaymentResponseDto toDto(Payment payment);
     SumResponseDto toSumResponseDto(BigDecimal totalSum);
 }

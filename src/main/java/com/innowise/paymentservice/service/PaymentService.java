@@ -6,7 +6,7 @@ import com.innowise.paymentservice.enumtype.PaymentStatus;
 import java.util.UUID;
 
 public interface PaymentService {
-    PaymentResponseDto createPayment(PaymentCreateDto paymentCreateDto);
+    PaymentResponseDto createPayment(PaymentCreateDto paymentCreateDto, UUID id);
     PagePaymentResponseDto getPaymentsByUserId(UUID userId, PageRequestDto pageRequestDto);
     PagePaymentResponseDto getPaymentsByOrderId(Long orderId, PageRequestDto pageRequestDto);
     PagePaymentResponseDto getPaymentsByStatus(PaymentStatus paymentStatus, PageRequestDto pageRequestDto);

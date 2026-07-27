@@ -44,7 +44,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/payments/total")
                                 .hasRole("admin")
                                 .requestMatchers(HttpMethod.POST, "/api/payments")
-                                .hasRole( "admin")
+                                .hasAnyRole("user", "admin")
 
                 )
                 .sessionManagement(session ->

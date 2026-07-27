@@ -8,6 +8,7 @@ import com.innowise.paymentservice.mapper.PaymentMapper;
 import com.innowise.paymentservice.repository.PaymentRepository;
 import com.innowise.paymentservice.service.KafkaService;
 import com.innowise.paymentservice.service.PaymentService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,9 +52,14 @@ class PaymentServiceImplTest {
     private final UUID userId = UUID.randomUUID();
     private final Long orderId = 12345L;
 
+    @AfterEach
+    void cleanDb() {
+        paymentRepository.deleteAll();
+    }
+
     @Test
     void shouldCreateSuccessfulPaymentWhenRandomIsEven() {
-        PaymentCreateDto createDto = new PaymentCreateDto(orderId, userId, new BigDecimal(100));
+        PaymentCreateDto createDto = new PaymentCreateDto(orderId, new BigDecimal(100));
         Payment payment = new Payment();
         PaymentResponseDto responseDto = new PaymentResponseDto(
                 "1234",
@@ -62,24 +69,22 @@ class PaymentServiceImplTest {
                 LocalDateTime.now(),
                 new BigDecimal(100));
 
-        when(paymentMapper.toPayment(createDto)).thenReturn(payment);
+        when(paymentMapper.toPayment(eq(createDto), any(String.class))).thenReturn(payment);
         when(randomNumFeignClient.getNum()).thenReturn(List.of(new RandomNumResponseDto(42L)));
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
         when(paymentMapper.toDto(payment)).thenReturn(responseDto);
 
-        PaymentResponseDto result = paymentService.createPayment(createDto);
+        PaymentResponseDto result = paymentService.createPayment(createDto, UUID.randomUUID());
 
         assertThat(result).isNotNull();
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.SUCCESS);
         verify(paymentRepository).save(payment);
-        verify(kafkaService).sendMessage(responseDto);
     }
 
     @Test
     void shouldCreateFailedPaymentWhenRandomIsOdd() {
         PaymentCreateDto createDto = new PaymentCreateDto(
                 orderId,
-                userId,
                 new BigDecimal(100));
 
         Payment payment = new Payment();
@@ -92,12 +97,12 @@ class PaymentServiceImplTest {
                 new BigDecimal(100)
         );
 
-        when(paymentMapper.toPayment(any())).thenReturn(payment);
+        when(paymentMapper.toPayment(any(), any())).thenReturn(payment);
         when(randomNumFeignClient.getNum()).thenReturn(List.of(new RandomNumResponseDto(7L)));
         when(paymentRepository.save(any())).thenReturn(payment);
         when(paymentMapper.toDto(any())).thenReturn(responseDto);
 
-        paymentService.createPayment(createDto);
+        paymentService.createPayment(createDto, UUID.randomUUID());
 
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.FAILED);
     }
@@ -123,7 +128,7 @@ class PaymentServiceImplTest {
                 LocalDateTime.now(),
                 new BigDecimal(100));
 
-        when(paymentRepository.findAllByUserId(userId, pageable)).thenReturn(page);
+        when(paymentRepository.findAllByUserId(userId.toString(), pageable)).thenReturn(page);
         when(paymentMapper.toDto(any(Payment.class))).thenReturn(responseDto);
 
         PagePaymentResponseDto result = paymentService.getPaymentsByUserId(userId, pageDto);
@@ -197,7 +202,7 @@ class PaymentServiceImplTest {
         );
 
         when(paymentRepository.findAllByUserIdAndTimestampBetween(
-                userId, dateDto.from(), dateDto.to()))
+                userId.toString(), dateDto.from(), dateDto.to()))
                 .thenReturn(payments);
 
         when(paymentMapper.toSumResponseDto(any(BigDecimal.class)))

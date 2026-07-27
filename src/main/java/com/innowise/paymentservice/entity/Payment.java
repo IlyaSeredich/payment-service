@@ -19,8 +19,7 @@ public class Payment {
     @Id
     private String id;
     private Long orderId;
-    @Field(targetType = FieldType.BINARY)
-    private UUID userId;
+    private String userId;
     private PaymentStatus status;
     private LocalDateTime timestamp;
     private BigDecimal paymentAmount;

@@ -21,8 +21,11 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<PaymentResponseDto> createPayment(@Valid @RequestBody PaymentCreateDto paymentCreateDto) {
-        PaymentResponseDto paymentResponseDto = paymentService.createPayment(paymentCreateDto);
+    public ResponseEntity<PaymentResponseDto> createPayment(
+            @Valid @RequestBody PaymentCreateDto paymentCreateDto,
+            @AuthenticationPrincipal Jwt jwt) {
+        PaymentResponseDto paymentResponseDto =
+                paymentService.createPayment(paymentCreateDto, UUID.fromString(jwt.getSubject()));
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentResponseDto);
     }
 

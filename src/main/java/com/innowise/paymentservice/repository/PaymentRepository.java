@@ -13,13 +13,13 @@ import java.util.UUID;
 
 @Repository
 public interface PaymentRepository extends MongoRepository<Payment, String> {
-    Page<Payment> findAllByUserId(UUID userId, Pageable pageable);
+    Page<Payment> findAllByUserId(String userId, Pageable pageable);
 
     Page<Payment> findAllByOrderId(Long orderId, Pageable pageable);
 
     Page<Payment> findAllByStatus(PaymentStatus status, Pageable pageable);
 
-    List<Payment> findAllByUserIdAndTimestampBetween(UUID userId, LocalDateTime timestampAfter, LocalDateTime timestampBefore);
+    List<Payment> findAllByUserIdAndTimestampBetween(String userId, LocalDateTime timestampAfter, LocalDateTime timestampBefore);
 
     List<Payment> findAllByTimestampBetween(LocalDateTime timestampAfter, LocalDateTime timestampBefore);
 }

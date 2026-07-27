@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -29,8 +30,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final KafkaService kafkaService;
 
     @Override
-    public PaymentResponseDto createPayment(PaymentCreateDto paymentCreateDto) {
-        Payment payment = paymentMapper.toPayment(paymentCreateDto);
+    public PaymentResponseDto createPayment(PaymentCreateDto paymentCreateDto, UUID id) {
+        Payment payment = paymentMapper.toPayment(paymentCreateDto, id.toString());
         List<RandomNumResponseDto> num = randomNumFeignClient.getNum();
 
         if(num.stream().findFirst().get().random() % 2 == 0) {
@@ -45,14 +46,16 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentResponseDto paymentResponseDto = paymentMapper.toDto(savedPayment);
 
-        kafkaService.sendMessage(paymentResponseDto);
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
+            kafkaService.sendMessage(paymentCreateDto.orderId());
+        }
         return paymentResponseDto;
     }
 
     @Override
     public PagePaymentResponseDto getPaymentsByUserId(UUID userId, PageRequestDto pageRequestDto) {
         Pageable pageable = createPageable(pageRequestDto);
-        Page<Payment> payments = paymentRepository.findAllByUserId(userId, pageable);
+        Page<Payment> payments = paymentRepository.findAllByUserId(userId.toString(), pageable);
         return createPagePaymentResponseDto(payments);
     }
 
@@ -76,7 +79,7 @@ public class PaymentServiceImpl implements PaymentService {
             PaymentRangeDateDto paymentRangeDateDto) {
 
         List<Payment> payments = paymentRepository.findAllByUserIdAndTimestampBetween(
-                userId,
+                userId.toString(),
                 paymentRangeDateDto.from(),
                 paymentRangeDateDto.to()
         );
@@ -97,7 +100,6 @@ public class PaymentServiceImpl implements PaymentService {
         BigDecimal totalSum = calculateTotalSum(payments);
         return paymentMapper.toSumResponseDto(totalSum);
     }
-
 
 
     private Pageable createPageable(PageRequestDto pageRequestDto) {
